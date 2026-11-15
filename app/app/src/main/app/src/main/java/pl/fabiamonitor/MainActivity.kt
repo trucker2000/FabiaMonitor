@@ -45,7 +45,7 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
+        installCrashLogger()
     try {
         createScreen()
 
@@ -372,7 +372,20 @@ class MainActivity : Activity() {
             }
             .show()
     }
+private fun installCrashLogger() {
+    val previousHandler = Thread.getDefaultUncaughtExceptionHandler()
 
+    Thread.setDefaultUncaughtExceptionHandler { thread, error ->
+        try {
+            openFileOutput("crash.txt", MODE_PRIVATE).bufferedWriter().use {
+                it.write(error.stackTraceToString())
+            }
+        } catch (_: Exception) {
+        }
+
+        previousHandler?.uncaughtException(thread, error)
+    }
+}
     private fun updateStatus(message: String) {
         runOnUiThread {
             status.text = message
