@@ -45,8 +45,26 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-        installCrashLogger()
+
     try {
+        val crashFile = java.io.File(filesDir, "crash.txt")
+
+        if (crashFile.exists()) {
+            val report = crashFile.readText()
+
+            val screen = TextView(this).apply {
+                text = "RAPORT AWARII:\n\n$report"
+                textSize = 14f
+                setPadding(20, 20, 20, 20)
+            }
+
+            setContentView(ScrollView(this).apply {
+                addView(screen)
+            })
+
+            return
+        }
+
         createScreen()
 
         if (Build.VERSION.SDK_INT >= 31 &&
@@ -60,13 +78,17 @@ class MainActivity : Activity() {
         } else {
             connectToAdapter()
         }
+
     } catch (e: Exception) {
         val message = TextView(this).apply {
-            text = "Błąd uruchamiania:\n${e.javaClass.simpleName}\n${e.message}"
-            textSize = 18f
-            setPadding(24, 24, 24, 24)
+            text = "BŁĄD URUCHAMIANIA:\n${e.stackTraceToString()}"
+            textSize = 14f
+            setPadding(20, 20, 20, 20)
         }
-        setContentView(message)
+
+        setContentView(ScrollView(this).apply {
+            addView(message)
+        })
     }
 }
 
