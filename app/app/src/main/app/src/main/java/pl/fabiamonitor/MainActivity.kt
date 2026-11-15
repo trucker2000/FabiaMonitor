@@ -44,7 +44,9 @@ class MainActivity : Activity() {
     private var lastSampleTime = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    super.onCreate(savedInstanceState)
+
+    try {
         createScreen()
 
         if (Build.VERSION.SDK_INT >= 31 &&
@@ -58,7 +60,16 @@ class MainActivity : Activity() {
         } else {
             connectToAdapter()
         }
+    } catch (e: Exception) {
+        val message = TextView(this).apply {
+            text = "Błąd uruchamiania:\n${e.javaClass.simpleName}\n${e.message}"
+            textSize = 18f
+            setPadding(24, 24, 24, 24)
+        }
+        setContentView(message)
     }
+}
+
 
     private fun createScreen() {
         val root = LinearLayout(this).apply {
